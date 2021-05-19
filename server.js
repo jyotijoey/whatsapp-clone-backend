@@ -2,17 +2,19 @@ import express from "express";
 import mongoose from "mongoose";
 import Messages from "./dbMessages.js";
 import Pusher from "pusher";
+import cors from "cors";
 
 const app = express();
 const port = process.env.PORT || 9000;
 
 const pusher = new Pusher({
-    // coder from pusher
+    //keys from fusher
   });
 
 app.use(express.json());
+app.use(cors());
 
-const password= "mongodb+srv://admin-whatsapp-jyoti:....@cluster0.qssji.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
+const password= "mongodb+srv://admin-whatsapp-jyoti:...@cluster0.qssji.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
 mongoose.connect( password , {
     useNewUrlParser: true,
     useUnifiedTopology: true
@@ -32,11 +34,12 @@ db.once("open", () => {
 
         if (change.operationType==="insert"){
             const messageDetails = change.fullDocument;
-            pusher.trigger("message", "inserted", 
+            pusher.trigger("messages", "inserted", 
             {
-                name: messageDetails.user,
+                name: messageDetails.name,
                 message: messageDetails.message,
-
+                timestamp: messageDetails.timestamp,
+                received: messageDetails.received
             });
         }
         else{
